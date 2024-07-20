@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>공유문서 업&다운로드 및 공유하기</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    @keyframes loading {
+      0% { background-color: #28a745; }
+      20% { background-color: #218838; }
+      40% { background-color: #1e7e34; }
+      60% { background-color: #218838; }
+      80% { background-color: #1e7e34; }
+      100% { background-color: #28a745; }
+    }
+
+    @keyframes fade {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+    .loading {
+      animation: loading 2.5s infinite;
+    }
+
+    .fading-text {
+      animation: fade 2.5s infinite;
+    }
+  </style>
+  <script>
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbyhCdlFWwsdo0m2kiWDPfn8vy0r8Eumy2baDSGWwhmF9WemDZlSwEtqbDb28XwSTQyZ/exec';
+
+    async function checkPassword() {
+      const passwordInput = document.getElementById('passwordInput').value;
+      try {
+        const response = await fetch(webAppUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            action: 'checkPassword',
+            password: passwordInput
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const result = await response.json();
+        if (result.isValid) {
+          document.getElementById('fileTable').style.display = 'block';
+          document.getElementById('passwordBox').style.display = 'none';
+          displayFiles();
+        } else {
+          alert('⚠️패스워드를 확인해 주세요');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    async function addFileInput() {
+      const fileInputs = document.getElementById('fileInputs');
+      const newFileInput = document.createElement('div');
+      newFileInput.className = 'input-group mb-3';
+      newFileInput.innerHTML = `
+        <input type="file" class="form-control-file">
+        <input type="text" class="form-control" placeholder="파일 설명">
+        <div class="input-group-append">
+          <button class="btn btn-outline-danger" type="button" onclick="removeFileInput(this)">❌</button>
+        </div>
+      `;
+      fileInputs.appendChild(newFileInput);
+    }
+
+    function removeFileInput(button) {
+      const fileInputGroup = button.parentElement.parentElement;
+      fileInputGroup.remove();
+    }
+
+    async function uploadFiles() {
+      const uploadButton = document.getElementById('uploadButton');
+      const fileInputs = document.querySelectorAll('#fileInputs .input-group');
+      let files = [];
+      let descriptions = [];
+
+      fileInputs.forEach(group => {
+        const inputFile = group.querySelector('input[type="file"]');
+        const inputDesc = group.querySelector('input[type="text"]');
+        if (inputFile.files.length > 0) {
+          files.push(inputFile.files[0]);
+          descriptions.push(inputDesc.value || ''); // 빈 문자열이 기본값
+        }
+      });
+
+      if (files.length === 0) {
+        alert('파일을 선택해주세요.');
+        return;
+      }
+
+      uploadButton.disabled = true;
+      uploadButton.innerText = '📤업로드중...';
+      uploadButton.classList.add('loading');
+      uploadButton.classList.add('fading-text');
+      alert('🤷🏽‍♀️파일업로드 중입니다. 잠시만 기다려 주세요');
+
+      let uploadedCount = 0;
+
+      files.forEach((file, index) => {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+          const content = e.target.result;
+          fetch(webAppUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              action: 'upload',
+              filename: file.name,
+              fileContent: content,
+              description: descriptions[index]
+            })
+          })
+          .then(response => response.json())
+          .then(result => {
+            uploadedCount++;
+            addFileToList(result.fileId, result.fileName, result.description);
+            if (uploadedCount === files.length) {
+              alert('🚀모든 파일이 성공적으로 업로드 되었습니다.');
+              uploadButton.disabled = false;
+              uploadButton.innerText = '📤Upload';
+              uploadButton.classList.remove('loading');
+              uploadButton.classList.remove('fading-text');
+              clearFileInputs();
+            }
+          });
+        };
+
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function addFileToList(fileId, fileName, description) {
+      const fileList = document.getElementById('fileList');
+      const listItem = document.createElement('tr');
+      fetch(webAppUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'getFileDownloadUrl',
+          fileId: fileId
+        })
+      })
+      .then(response => response.json())
+      .then(result => {
+        const url = result.url;
+        listItem.innerHTML = `
+          <td><input type="checkbox" class="file-checkbox" data-id="${fileId}" data-name="${fileName}" data-url="${url}"></td>
+          <td><a href="#" onclick="downloadFileWithAlert('${url}')">${fileName}</a></td>
+          <td>${description}</td>
+          <td><button class="btn btn-primary btn-sm" onclick="downloadFile('${fileId}')">📥Down</button></td>
+          <td><button class="btn btn-warning btn-sm" onclick="shareFile('${fileId}')">©️Url</button></td>
+          <td><button class="btn btn-danger btn-sm" onclick="deleteFile('${fileId}', '${fileName}')">⛔Del</button></td>
+        `;
+        fileList.appendChild(listItem);
+      });
+    }
+
+    function clearFileInputs() {
+      const fileInputs = document.getElementById('fileInputs');
+      fileInputs.innerHTML = '';
+      addFileInput(); // 기본 파일 입력 폼 추가
+    }
+
+    async function displayFiles() {
+      fetch(webAppUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'getFiles'
+        })
+      })
+      .then(response => response.json())
+      .then(files => {
+        const fileList = document.getElementById('fileList');
+        fileList.innerHTML = ''; // Clear the existing list
+        files.forEach(file => {
+          addFileToList(file.fileId, file.fileName, file.description);
+        });
+      });
+    }
+
+    function downloadFileWithAlert(url) {
+      alert('📥파일이 다운로드 됩니다. [다운로드]폴더로 저장됩니다.');
+      window.open(url, '_blank');
+    }
+
+    function toggleSelectAll(selectAllCheckbox) {
+      const checkboxes = document.querySelectorAll('.file-checkbox');
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+      });
+    }
+
+    async function deleteSelectedFiles() {
+      const selectedCheckboxes = document.querySelectorAll('.file-checkbox:checked');
+      if (selectedCheckboxes.length === 0) {
+        alert('🤷🏽‍♀️삭제할 파일을 선택해주세요.');
+        return;
+      }
+      const password = prompt('⚠️선택한 파일들을 삭제하시려면 패스워드를 입력하세요:');
+      if (!password) return;
+
+      const fileIds = [];
+      selectedCheckboxes.forEach(checkbox => {
+        fileIds.push(checkbox.getAttribute('data-id'));
+      });
+
+      fetch(webAppUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'checkPassword',
+          password: password
+        })
+      })
+      .then(response => response.json())
+      .then(result => {
+        if (result.isValid) {
+          fetch(webAppUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              action: 'delete',
+              fileIds: fileIds
+            })
+          })
+          .then(() => {
+            fileIds.forEach(fileId => {
+              removeFileFromList(fileId);
+            });
+            alert('⚠️선택한 파일들이 삭제되었습니다.');
+          });
+        } else {
+          alert('⚠️패스워드가 올바르지 않습니다.');
+        }
+      });
+    }
+
+    function removeFileFromList(fileId) {
+      const fileList = document.getElementById('fileList');
+      const rows = fileList.getElementsByTagName('tr');
+      for (let i = 0; i < rows.length; i++) {
+        const checkbox = rows[i].querySelector('.file-checkbox');
+        if (checkbox && checkbox.getAttribute('data-id') === fileId) {
+          fileList.removeChild(rows[i]);
+          break;
+        }
+      }
+    }
+
+    async function downloadSelectedFiles() {
+      const selectedCheckboxes = document.querySelectorAll('.file-checkbox:checked');
+      if (selectedCheckboxes.length === 0) {
+        alert('🤷🏽‍♀️다운로드할 파일을 선택해주세요.');
+        return;
+      }
+      alert('📥선택한 파일들이 다운로드 됩니다. [다운로드]폴더로 저장됩니다.');
+      selectedCheckboxes.forEach(checkbox => {
+        const url = checkbox.getAttribute('data-url');
+        window.open(url, '_blank');
+      });
+    }
+
+    async function downloadFile(fileId) {
+      alert("🤷🏽‍♀️다운로드된 파일은 [다운로드]폴더에 저장됩니다.");
+      fetch(webAppUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'getFileDownloadUrl',
+          fileId: fileId
+        })
+      })
+      .then(response => response.json())
+      .then(result => {
+        window.open(result.url);
+      });
+    }
+
+    async function shareFile(fileId) {
+      alert('🤷‍♂️ 다운로드 링크를 가져옵니다. 잠시만 기다려주세요');
+      fetch(webAppUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'getFileDownloadUrl',
+          fileId: fileId
+        })
+      })
+      .then(response => response.json())
+      .then(result => {
+        copyToClipboard(result.url);
+        alert('🚀링크가 복사되었습니다. 원하시는 곳에 붙여 넣으세요');
+      });
+    }
+
+    function copyToClipboard(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+    }
+
+    async function deleteFile(fileId, fileName) {
+      const password = prompt(`🤷🏽‍♀️ ${fileName} 파일을 삭제하시려면 초기 패스워드를 입력하세요:`);
+      if (password) {
+        fetch(webAppUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            action: 'checkPassword',
+            password: password
+          })
+        })
+        .then(response => response.json())
+        .then(result => {
+          if (result.isValid) {
+            fetch(webAppUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                action: 'delete',
+                fileIds: [fileId]
+              })
+            })
+            .then(() => {
+              removeFileFromList(fileId);
+              alert('⚠️파일이 삭제되었습니다.');
+            });
+          } else {
+            alert('⚠️패스워드가 올바르지 않습니다.');
+          }
+        });
+      }
+    }
+
+    window.onload = function() {
+      addFileInput(); // 기본 파일 입력 폼 추가
+    };
+
+    // 파일 검색 추가
+    function filterFiles() {
+      const filter = document.getElementById('searchInput').value.toLowerCase();
+      const rows = document.querySelectorAll('#fileList tr');
+      rows.forEach(row => {
+        const fileName = row.querySelector('td:nth-child(2)').textContent.toLowerCase(); // 2번째 td가 파일명
+        const fileDescription = row.querySelector('td:nth-child(3)').textContent.toLowerCase(); // 3번째 td가 파일 설명
+        if (fileName.includes(filter) || fileDescription.includes(filter)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</head>
+<body class="container mt-5">
+  <h3 class="mb-4">⭐공유파일 업로드 및 다운로드</h3>
+  <div id="passwordBox">
+    <input type="password" id="passwordInput" class="form-control" placeholder="패스워드 입력후 아래 버튼을 클릭하세요">
+    <button class="btn btn-primary mt-3" onclick="checkPassword()">🔎파일공유 및 다운로드</button>
+    <hr>
+  </div>
+  <div id="fileTable" style="display:none;">
+    <h4 class="mb-3">📤파일 업로드</h4>
+    <div id="fileInputs"></div>
+    <button class="btn btn-secondary mb-3 btn-sm" onclick="addFileInput()">⬆️파일 추가</button><br>
+    <button id="uploadButton" class="btn btn-success btn-block" onclick="uploadFiles()">📤Upload</button>
+
+    <br>
+    <h5 class="mb-4">🔎파일찾기(아래 검색창에 연관 검색어를 입력하세요)</h5>
+    <input type="text" id="searchInput" class="form-control mb-3" placeholder="🔎검색어를 입력하세요" onkeyup="filterFiles()">
+    <button class="btn btn-primary btn-sm" onclick="downloadSelectedFiles()">📤선택 다운로드</button>
+    <button class="btn btn-danger btn-sm" onclick="deleteSelectedFiles()">⛔선택 삭제</button>
+    <table class="table table-bordered mt-3">
+      <thead>
+        <tr class="text-center">
+          <th><input type="checkbox" onclick="toggleSelectAll(this)"></th>
+          <th>파일명</th>
+          <th>파일 설명</th>
+          <th>다운로드</th>
+          <th>공유</th>
+          <th>삭제</th>
+        </tr>
+      </thead>
+      <tbody id="fileList"></tbody>
+    </table>
+  </div>
+</body>
+</html>
