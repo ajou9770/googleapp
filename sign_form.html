@@ -128,19 +128,19 @@
         <h1>신청하기</h1>
         <form id="application-form">
             <label for="id">아이디:</label>
-            <input type="text" id="id" name="id" required="required"><br><br>
+            <input type="text" id="id" name="id" required="required">
 
             <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required="required"><br><br>
+            <input type="text" id="name" name="name" required="required">
 
             <label for="tel">연락처:</label>
-            <input type="tel" id="tel" name="tel" required="required"><br><br>
+            <input type="tel" id="tel" name="tel" required="required">
 
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required="required"><br><br>
+            <input type="email" id="email" name="email" required="required">
 
             <label for="message">Message:</label>
-            <textarea id="message" name="message" rows="4"></textarea><br><br>
+            <textarea id="message" name="message" rows="4"></textarea>
 
             <label for="signature">서명:</label>
             <div class="signature-pad" id="signature-pad">
@@ -148,7 +148,7 @@
             </div>
             <div class="signature-buttons">
                 <button type="button" id="clear-signature">Clear</button>
-                <button type="button" id="save-signature">Save</button>
+                <!-- <button type="button" id="save-signature">Save</button> -->
             </div><br><br>
 
             <button type="submit" id="submit-button">제출하기</button>
@@ -166,15 +166,14 @@
             document.getElementById('clear-signature').addEventListener('click', function () {
                 signaturePad.clear();
             });
-
-            document.getElementById('save-signature').addEventListener('click', function () {
+           /*  document.getElementById('save-signature').addEventListener('click', function () {
                 if (signaturePad.isEmpty()) {
                     alert("Please provide a signature.");
                 } else {
                     var dataURL = signaturePad.toDataURL('image/png');
                     console.log(dataURL); // For testing purposes
-                }
-            });
+                } 
+            });*/
         
 
             document.getElementById('application-form').addEventListener('submit', function (event) {
