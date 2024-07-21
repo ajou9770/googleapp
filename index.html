@@ -134,7 +134,7 @@
                 fetch('https://script.google.com/macros/s/AKfycbzW44PNYXOu6b49euR77R-PNKS7h6i_D3kGN5H' +
                     'KLEOLiZsWCZOWo3g2D822Zt6pDarw/exec', {
                     method: 'POST',
-                    headers: {},
+                    headers: {},// 이 헤드 부분을 비웠을 경우 보안 CORS문제가 안됨.(고유지책)
                     body: JSON.stringify(formData)
                 })
                 .then(response => response.json())
