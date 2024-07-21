@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Form</title>
+    <style>
+        /* 간단한 스타일 적용 */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+
+        .container {
+            background: #fff;
+            width: 80%;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #response {
+            margin-top: 15px;
+            font-size: 16px;
+            color: green;
+        }
+
+        /* 로딩 애니메이션 스타일 */
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #007bff;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading {
+            padding-right: 30px; /* Ensure space for the spinner */
+        }
+
+        .signature-pad {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            height: 150px;
+            position: relative;
+        }
+
+        .signature-pad canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .signature-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .signature-buttons button {
+            padding: 8px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .signature-buttons button:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>신청하기</h1>
+        <form id="application-form">
+            <label for="id">아이디:</label>
+            <input type="text" id="id" name="id" required="required"><br><br>
+
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required="required"><br><br>
+
+            <label for="tel">연락처:</label>
+            <input type="tel" id="tel" name="tel" required="required"><br><br>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required="required"><br><br>
+
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" rows="4"></textarea><br><br>
+
+            <label for="signature">서명:</label>
+            <div class="signature-pad" id="signature-pad">
+                <canvas></canvas>
+            </div>
+            <div class="signature-buttons">
+                <button type="button" id="clear-signature">Clear</button>
+                <button type="button" id="save-signature">Save</button>
+            </div><br><br>
+
+            <button type="submit" id="submit-button">제출하기</button>
+        </form>
+        <div id="response"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize signature pad
+            var canvas = document.querySelector('#signature-pad canvas');
+            var signaturePad = new SignaturePad(canvas);
+
+            document.getElementById('clear-signature').addEventListener('click', function () {
+                signaturePad.clear();
+            });
+
+            document.getElementById('save-signature').addEventListener('click', function () {
+                if (signaturePad.isEmpty()) {
+                    alert("Please provide a signature.");
+                } else {
+                    var dataURL = signaturePad.toDataURL('image/png');
+                    console.log(dataURL); // For testing purposes
+                }
+            });
+        
+
+            document.getElementById('application-form').addEventListener('submit', function (event) {
+                event.preventDefault();
+            
+                var submitButton = document.getElementById('submit-button');
+                submitButton.textContent = '🔄제출중..';
+                submitButton.disabled = true;
+                submitButton.classList.add('loading');
+            
+                var formData = {
+                    id: document.getElementById('id').value,
+                    name: document.getElementById('name').value,
+                    tel: document.getElementById('tel').value,
+                    email: document.getElementById('email').value,
+                    message: document.getElementById('message').value,
+                    signature: signaturePad.toDataURL('image/png') // 서명 데이터 추가
+                };
+            
+                alert('🤷‍♂️제출중입니다. 잠시만 기다려주세요');
+            
+                fetch('https://script.google.com/macros/s/AKfycbzW44PNYXOu6b49euR77R-PNKS7h6i_D3kGN5HKLEOLiZsWCZOWo3g2D822Zt6pDarw/exec', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include', // 쿠키를 포함하여 요청
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('🚀 정상 제출되었습니다.');
+                    // 폼 리셋을 위한 타이머 설정
+                    setTimeout(function () {
+                        document.getElementById('application-form').reset();
+                        signaturePad.clear(); // 서명 패드도 초기화
+                        document.getElementById('response').textContent = ''; // 응답 메시지 초기화
+                    }, 3000); // 3000ms = 3초
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('response').textContent = '⚠서버저장시 오류 발생';
+                })
+                .finally(() => {
+                    submitButton.textContent = '제출하기';
+                    submitButton.disabled = false;
+                    submitButton.classList.remove('loading');
+                });
+            }); 
+        });          
+    </script>
+</body>
+</html>

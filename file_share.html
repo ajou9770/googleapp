@@ -35,10 +35,8 @@
       try {
         const response = await fetch(webAppUrl, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
+          headers: {},  // 헤드를 비울경우 보안정책을 피해감.
+           body: JSON.stringify({
             action: 'checkPassword',
             password: passwordInput
           })
@@ -115,9 +113,7 @@
           const content = e.target.result;
           fetch(webAppUrl, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
+            headers: {},
             body: JSON.stringify({
               action: 'upload',
               filename: file.name,
@@ -149,9 +145,7 @@
       const listItem = document.createElement('tr');
       fetch(webAppUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: {},
         body: JSON.stringify({
           action: 'getFileDownloadUrl',
           fileId: fileId
@@ -181,9 +175,7 @@
     async function displayFiles() {
       fetch(webAppUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: {},
         body: JSON.stringify({
           action: 'getFiles'
         })
@@ -226,9 +218,7 @@
 
       fetch(webAppUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: {},
         body: JSON.stringify({
           action: 'checkPassword',
           password: password
@@ -239,9 +229,7 @@
         if (result.isValid) {
           fetch(webAppUrl, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
+            headers: {},
             body: JSON.stringify({
               action: 'delete',
               fileIds: fileIds
@@ -288,9 +276,7 @@
       alert("🤷🏽‍♀️다운로드된 파일은 [다운로드]폴더에 저장됩니다.");
       fetch(webAppUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: {},
         body: JSON.stringify({
           action: 'getFileDownloadUrl',
           fileId: fileId
@@ -306,9 +292,7 @@
       alert('🤷‍♂️ 다운로드 링크를 가져옵니다. 잠시만 기다려주세요');
       fetch(webAppUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: {},
         body: JSON.stringify({
           action: 'getFileDownloadUrl',
           fileId: fileId
@@ -335,9 +319,7 @@
       if (password) {
         fetch(webAppUrl, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: {},
           body: JSON.stringify({
             action: 'checkPassword',
             password: password
@@ -348,9 +330,7 @@
           if (result.isValid) {
             fetch(webAppUrl, {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
+              headers: {},
               body: JSON.stringify({
                 action: 'delete',
                 fileIds: [fileId]
@@ -389,12 +369,12 @@
 </head>
 <body class="container mt-5">
   <h3 class="mb-4">⭐공유파일 업로드 및 다운로드</h3>
-  <div id="passwordBox">
+  <!-- <div id="passwordBox" >
     <input type="password" id="passwordInput" class="form-control" placeholder="패스워드 입력후 아래 버튼을 클릭하세요">
     <button class="btn btn-primary mt-3" onclick="checkPassword()">🔎파일공유 및 다운로드</button>
     <hr>
-  </div>
-  <div id="fileTable" style="display:none;">
+  </div> -->
+  <div id="fileTable" style="display:block;">
     <h4 class="mb-3">📤파일 업로드</h4>
     <div id="fileInputs"></div>
     <button class="btn btn-secondary mb-3 btn-sm" onclick="addFileInput()">⬆️파일 추가</button><br>
