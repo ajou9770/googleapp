@@ -192,35 +192,41 @@
                     email: document.getElementById('email').value,
                     message: document.getElementById('message').value,
                     signature: signaturePad.toDataURL('image/png') // 서명 데이터 추가
-                };
-            
+                };            
                 alert('🤷‍♂️제출중입니다. 잠시만 기다려주세요');
-                    fetch('AKfycbzFcpzoe8sHd0BTjDN2p4eYMtLS8kH3hrI4IlnQ1NEzLCUxRRNiEOASFp0mjvhDGe6u', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                })
-                .then(response => response.text())
-                .then(data => {
-                    alert('🚀 정상 제출되었습니다.');
-                    // 폼 리셋을 위한 타이머 설정
-                    setTimeout(function () {
-                        document.getElementById('application-form').reset();
-                        signaturePad.clear(); // 서명 패드도 초기화
-                        document.getElementById('response').textContent = ''; // 응답 메시지 초기화
-                    }, 3000); // 3000ms = 3초
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('response').textContent = '⚠서버저장시 오류 발생';
-                })
-                .finally(() => {
-                    submitButton.textContent = '제출하기';
-                    submitButton.disabled = false;
-                    submitButton.classList.remove('loading');
-                });
+                    fetch('https://script.google.com/macros/s/AKfycbzFcpzoe8sHd0BTjDN2p4eYMtLS8kH3hrI4IlnQ1NEzLCUxRRNiEOASFp0mjvhDGe6u/exec', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        mode: 'no-cors', // 테스트용 설정
+                        body: JSON.stringify({
+                            id: document.getElementById('id').value,
+                            name: document.getElementById('name').value,
+                            tel: document.getElementById('tel').value,
+                            email: document.getElementById('email').value,
+                            message: document.getElementById('message').value,
+                            signature: signaturePad.toDataURL('image/png') // 서명 데이터 추가
+                        })
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                        alert('🚀 정상 제출되었습니다.');
+                        setTimeout(function () {
+                            document.getElementById('application-form').reset();
+                            signaturePad.clear(); // 서명 패드도 초기화
+                            document.getElementById('response').textContent = ''; // 응답 메시지 초기화
+                        }, 3000); // 3000ms = 3초
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('response').textContent = '⚠서버저장시 오류 발생';
+                    })
+                    .finally(() => {
+                        submitButton.textContent = '제출하기';
+                        submitButton.disabled = false;
+                        submitButton.classList.remove('loading');
+                    });
             }); 
         });          
     </script>
