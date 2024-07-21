@@ -1,208 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Application Form</title>
-        <style>
-            /* 간단한 스타일 적용 */
-            body {
-                font-family: Arial, sans-serif;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-                background-color: #f4f4f4;
-                margin: 0;
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Form</title>
+    <style>
+        /* 기본 스타일 설정 */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            width: 80%;
+            max-width: 600px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input,
+        textarea {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        #response {
+            margin-top: 15px;
+            font-size: 16px;
+            color: green;
+        }
+        /* 제출 버튼 스타일 */
+        #submit-button {
+            background-color: rgba(0, 0, 0, 0.1); /* 투명한 배경색 */
+            color: #000; /* 버튼 텍스트 색상 */
+            border: 1px solid #ccc; /* 버튼 테두리 */
+            padding: 10px 20px; /* 버튼 패딩 */
+            border-radius: 5px; /* 버튼 모서리 둥글게 */
+            cursor: pointer; /* 커서 모양 */
+            transition: background-color 0.3s, color 0.3s; /* 배경색 및 텍스트 색상 변화 애니메이션 */
+            position: relative; /* 애니메이션 위치 조정을 위해 추가 */
+        }
+        #submit-button.loading {
+            background-color: rgba(0, 0, 0, 0.2); /* 로딩 중 버튼 배경색 */
+            color: #555; /* 로딩 중 버튼 텍스트 색상 */
+            cursor: not-allowed; /* 클릭 불가 모양 */
+        }
+        .loading-text {
+            display: inline-block;
+            position: relative;
+            font-size: 16px;
+        }
+        .loading-text::after {
+            content: '▶'; /* 화살표 기호 */
+            position: absolute;
+            right: -30px; /* 화살표 위치 조정 */
+            animation: moveArrow 1s infinite; /* 애니메이션 설정 */
+        }
+        @keyframes moveArrow {
+            0% {
+                right: -30px;
             }
-
-            .container {
-                background: #fff;
-                width: 80%;
-                padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            50% {
+                right: -10px;
             }
-
-            form {
-                display: flex;
-                flex-direction: column;
+            100% {
+                right: -30px;
             }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>신청하기</h2>
+        <form id="application-form">
+            <input
+                type="number"
+                id="id"
+                name="id"
+                placeholder="✨사번을 입력하세요(숫자만)"
+                required="required"><br>
+            <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="🤵이름을 입력하세요"
+                required="required"><br>
+            <input
+                type="tel"
+                id="tel"
+                name="tel"
+                placeholder="☎연락처(숫자) 입력"
+                required="required"><br>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="📧이메일 입력"
+                required="required"><br>
+            <label for="message">💬남기실 말씀:</label>
+            <textarea id="message" name="message" rows="3"></textarea><br>
+            <button type="submit" id="submit-button" class="loading-text">제출하기</button>
+        </form>
+        <div id="response"></div>
+    </div>
+    <script>
+        document.getElementById('application-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            
+            var submitButton = document.getElementById('submit-button');
+            submitButton.textContent = '🔄제출중 >>>>'; // 텍스트 변경
+            submitButton.disabled = true; // 버튼 비활성화
+            submitButton.classList.add('loading'); // 로딩 클래스 추가
 
-            label {
-                margin-bottom: 5px;
-                font-weight: bold;
-            }
-
-            input,
-            textarea {
-                margin-bottom: 15px;
-                padding: 10px;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-                font-size: 16px;
-            }
-
-            button {
-                padding: 10px;
-                border: none;
-                background-color: #007bff;
-                color: white;
-                border-radius: 4px;
-                font-size: 16px;
-                cursor: pointer;
-                position: relative;
-            }
-
-            button:hover {
-                background-color: #0056b3;
-            }
-
-            #response {
-                margin-top: 15px;
-                font-size: 16px;
-                color: green;
-            }
-
-            /* 로딩 애니메이션 스타일 */
-            .spinner {
-                border: 2px solid #f3f3f3;
-                border-top: 2px solid #007bff;
-                border-radius: 50%;
-                width: 16px;
-                height: 16px;
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                margin-left: -8px;
-                margin-top: -8px;
-                animation: spin 1s linear infinite;
-            }
-
-            @keyframes spin {
-                0% {
-                    transform: rotate(0deg);
-                }
-                100% {
-                    transform: rotate(360deg);
-                }
-            }
-
-            .loading {
-                padding-right: 30px;
-                /* Ensure space for the spinner */
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h2>신청하기</h2>
-            <form id="application-form">
-                <!-- <label for="id">아이디:</label> -->
-                <input
-                    type="number"
-                    id="id"
-                    name="id"
-                    placeholder="✨사번을 입력하세요(숫자만)"
-                    required="required"><br><br>
-
-                <!-- <label for="name">Name:</label> -->
-                <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    placeholder="🤵이름을 입력하세요"
-                    required="required"><br><br>
-
-                <!-- <label for="tel">연락처:</label> -->
-                <input
-                    type="tel"
-                    id="tel"
-                    name="tel"
-                    placeholder="☎연락처(숫자) 입력"
-                    required="required"><br><br>
-                <!-- <label for="email">Email:</label> -->
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="📧이메일 입력"
-                    required="required"><br><br>
-
-                <label for="message">💬남기실 말씀:</label>
-                <textarea id="message" name="message" rows="1"></textarea><br><br>
-
-                <button type="submit" id="submit-button">제출하기</button>
-            </form>
-            <!-- <div id="response"></div> -->
-        </div>
-
-        <script>
-            document
-                .getElementById('application-form')
-                .addEventListener('submit', function (event) {
-                    event.preventDefault();
-
-                    var submitButton = document.getElementById('submit-button');
-                    submitButton.textContent = '🔄제출중..';
-                    submitButton.disabled = true;
-                    submitButton
-                        .classList
-                        .add('loading');
-
-                    var formData = {
-                        id: document
-                            .getElementById('id')
-                            .value,
-                        name: document
-                            .getElementById('name')
-                            .value,
-                        tel: document
-                            .getElementById('tel')
-                            .value,
-                        email: document
-                            .getElementById('email')
-                            .value,
-                        message: document
-                            .getElementById('message')
-                            .value
-                    };
-                    alert('🤷‍♂️제출중입니다. 잠시만 기다려주세요');
-                    fetch(
-                        'https://script.google.com/macros/s/AKfycbzW44PNYXOu6b49euR77R-PNKS7h6i_D3kGN5H' +
-                                'KLEOLiZsWCZOWo3g2D822Zt6pDarw/exec',
-                        {
-                            method: 'POST',
-                            headers: {}, // 헤드 설정 생략 (보안정책 회피)
-                            body: JSON.stringify(formData)
-                        }
-                    )
-                        .then(response => response.json())
-                        .then(data => {
-                            alert('🚀 정상 제출되었습니다. ');
-                            // 폼 리셋을 위한 타이머 설정
-                            setTimeout(function () {
-                                document
-                                    .getElementById('application-form')
-                                    .reset();
-                                signaturePad.clear(); // 서명 패드도 초기화
-                            }, 3000); // 3000ms = 3초
-                            //document.getElementById('response').textContent = '🚀잘 제출되었습니다.';
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            document
-                                .getElementById('response')
-                                .textContent = '⚠서버저장시 오류 발생';
-                        })
-                        . finally(() => {
-                            submitButton.textContent = '제출하기';
-                            submitButton.disabled = false;
-                            submitButton
-                                .classList
-                                .remove('loading');
-                        });
-                });
-        </script>
-    </body>
+            var formData = {
+                id: document.getElementById('id').value,
+                name: document.getElementById('name').value,
+                tel: document.getElementById('tel').value,
+                email: document.getElementById('email').value,
+                message: document.getElementById('message').value
+            };
+            
+            fetch('https://script.google.com/macros/s/AKfycbzW44PNYXOu6b49euR77R-PNKS7h6i_D3kGN5H' +
+                'KLEOLiZsWCZOWo3g2D822Zt6pDarw/exec', {
+                method: 'POST',
+                headers: {},
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('🚀 정상 제출되었습니다.');
+                document.getElementById('application-form').reset();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('response').textContent = '⚠서버 저장 시 오류 발생';
+            })
+            .finally(() => {
+                submitButton.textContent = '제출하기';
+                submitButton.disabled = false;
+                submitButton.classList.remove('loading');
+            });
+        });
+    </script>
+</body>
 </html>
