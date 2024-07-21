@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application Form</title>
+    <title>Signature form for Application Form</title>
     <style>
         /* 간단한 스타일 적용 */
         body {
@@ -195,16 +195,14 @@
                 };
             
                 alert('🤷‍♂️제출중입니다. 잠시만 기다려주세요');
-            
-                fetch('https://script.google.com/macros/s/AKfycbzW44PNYXOu6b49euR77R-PNKS7h6i_D3kGN5HKLEOLiZsWCZOWo3g2D822Zt6pDarw/exec', {
+                    fetch('AKfycbzFcpzoe8sHd0BTjDN2p4eYMtLS8kH3hrI4IlnQ1NEzLCUxRRNiEOASFp0mjvhDGe6u', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    credentials: 'include', // 쿠키를 포함하여 요청
                     body: JSON.stringify(formData)
                 })
-                .then(response => response.json())
+                .then(response => response.text())
                 .then(data => {
                     alert('🚀 정상 제출되었습니다.');
                     // 폼 리셋을 위한 타이머 설정
