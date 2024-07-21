@@ -11,19 +11,19 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             background-color: #f4f4f4;
             margin: 0;
-        }
-
+        }        
         .container {
             background: #fff;
-            width: 80%;
+            width: 90%; /* 모바일에서 조금 더 여유 있게 */
+            max-width: 600px; /* 최대 너비 설정 */
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
+            overflow: auto; /* 스크롤 문제가 있을 때 도움 */
+        }       
         form {
             display: flex;
             flex-direction: column;
