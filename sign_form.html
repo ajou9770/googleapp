@@ -1,233 +1,285 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Signature form for Application Form</title>
-    <style>
-        /* 간단한 스타일 적용 */
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #f4f4f4;
-            margin: 0;
-        }        
-        .container {
-            background: #fff;
-            width: 90%; /* 모바일에서 조금 더 여유 있게 */
-            max-width: 600px; /* 최대 너비 설정 */
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            overflow: auto; /* 스크롤 문제가 있을 때 도움 */
-        }       
-        form {
-            display: flex;
-            flex-direction: column;
-        }
+    <head>
+        <meta charset="UTF-8">
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <title>Signature form for Application Form</title>
+        <style>
+            /* 간단한 스타일 적용 */
+            body {
+                font-family: Arial, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                background-color: #f4f4f4;
+                margin: 0;
+            }
+            .container {
+                background: #fff;
+                width: 90%;
+                /* 모바일에서 조금 더 여유 있게 */
+                max-width: 600px;
+                /* 최대 너비 설정 */
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                overflow: auto;
+                /* 스크롤 문제가 있을 때 도움 */
+            }
+            form {
+                display: flex;
+                flex-direction: column;
+            }
 
-        label {
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
+            label {
+                margin-bottom: 5px;
+                font-weight: bold;
+            }
 
-        input,
-        textarea {
-            margin-bottom: 15px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
+            input,
+            textarea {
+                margin-bottom: 15px;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 16px;
+            }
 
-        button {
-            padding: 10px;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            position: relative;
-        }
+            button {
+                padding: 10px;
+                border: none;
+                background-color: #007bff;
+                color: white;
+                border-radius: 4px;
+                font-size: 16px;
+                cursor: pointer;
+                position: relative;
+            }
 
-        button:hover {
-            background-color: #0056b3;
-        }
+            button:hover {
+                background-color: #0056b3;
+            }
 
-        #response {
-            margin-top: 15px;
-            font-size: 16px;
-            color: green;
-        }
+            #response {
+                margin-top: 15px;
+                font-size: 16px;
+                color: green;
+            }
 
-        /* 로딩 애니메이션 스타일 */
-        .spinner {
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #007bff;
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            margin-left: -8px;
-            margin-top: -8px;
-            animation: spin 1s linear infinite;
-        }
+            /* 로딩 애니메이션 스타일 */
+            .spinner {
+                border: 2px solid #f3f3f3;
+                border-top: 2px solid #007bff;
+                border-radius: 50%;
+                width: 16px;
+                height: 16px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                margin-left: -8px;
+                margin-top: -8px;
+                animation: spin 1s linear infinite;
+            }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
 
-        .loading {
-            padding-right: 30px; /* Ensure space for the spinner */
-        }
+            .loading {
+                padding-right: 30px;
+                /* Ensure space for the spinner */
+            }
 
-        .signature-pad {
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            width: 280px;
-            height: 150px;
-            position: relative;
-        }
+            .signature-pad {
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                width: 280px;
+                height: 150px;
+                position: relative;
+            }
 
-        .signature-pad canvas {
-            width: 100%;
-            height: 100%;
-        }
+            .signature-pad canvas {
+                width: 100%;
+                height: 100%;
+            }
 
-        .signature-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-        }
+            .signature-buttons {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 10px;
+            }
 
-        .signature-buttons button {
-            padding: 8px;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-        }
+            .signature-buttons button {
+                padding: 8px;
+                border: none;
+                background-color: #007bff;
+                color: white;
+                border-radius: 4px;
+                font-size: 14px;
+                cursor: pointer;
+            }
 
-        .signature-buttons button:hover {
-            background-color: #0056b3;
-        }
+            .signature-buttons button:hover {
+                background-color: #0056b3;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>신청하기</h1>
+            <form id="application-form">
+                <label for="id">🔢아이디</label>
+                <input
+                    type="number"
+                    id="id"
+                    name="id"
+                    placeholder="숫자만 입력해 주세요"
+                    required="required">
 
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>신청하기</h1>
-        <form id="application-form">
-            <label for="id">🔢아이디</label>
-            <input type="number" id="id" name="id" placeholder="숫자만 입력해 주세요" required="required">
+                <label for="name">🤵이름</label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="이름 입력"
+                    required="required">
 
-            <label for="name">🤵이름</label>
-            <input type="text" id="name" name="name" placeholder="이름 입력" required="required">
+                <label for="tel">☎연락처</label>
+                <input
+                    type="tel"
+                    id="tel"
+                    name="tel"
+                    placeholder="숫자만 입력해 주세요"
+                    required="required">
 
-            <label for="tel">☎연락처</label>
-            <input type="tel" id="tel" name="tel" placeholder="숫자만 입력해 주세요" required="required">
+                <label for="email">📧Email</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="예) example@usrer.com"
+                    required="required">
 
-            <label for="email">📧Email</label>
-            <input type="email" id="email" name="email" placeholder="예) example@usrer.com" required="required">
+                <label for="message">💬남기실 말씀</label>
+                <textarea id="message" name="message" rows="1"></textarea>
 
-            <label for="message">💬남기실 말씀</label>
-            <textarea id="message" name="message" rows="1"></textarea>
+                <label for="signature">🖍️서명</label>
+                <div class="signature-pad" id="signature-pad">
+                    <canvas></canvas>
+                </div>
+                <div class="signature-buttons">
+                    <button type="button" id="clear-signature">Clear</button>
+                    <!-- <button type="button" id="save-signature">Save</button> -->
+                </div><br><br>
 
-            <label for="signature">서명</label>
-            <div class="signature-pad" id="signature-pad">
-                <canvas></canvas>
-            </div>
-            <div class="signature-buttons">
-                <button type="button" id="clear-signature">Clear</button>
-                <!-- <button type="button" id="save-signature">Save</button> -->
-            </div><br><br>
+                <button type="submit" id="submit-button">제출하기</button>
+            </form>
+            <div id="response"></div>
+        </div>
 
-            <button type="submit" id="submit-button">제출하기</button>
-        </form>
-        <div id="response"></div>
-    </div>
+        <script
+            src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Initialize signature pad
+                var canvas = document.querySelector('#signature-pad canvas');
+                var signaturePad = new SignaturePad(canvas);
 
-    <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Initialize signature pad
-            var canvas = document.querySelector('#signature-pad canvas');
-            var signaturePad = new SignaturePad(canvas);
-
-            document.getElementById('clear-signature').addEventListener('click', function () {
-                signaturePad.clear();
-            });
-           /*  document.getElementById('save-signature').addEventListener('click', function () {
-                if (signaturePad.isEmpty()) {
-                    alert("Please provide a signature.");
-                } else {
-                    var dataURL = signaturePad.toDataURL('image/png');
-                    console.log(dataURL); // For testing purposes
-                } 
-            });*/
-        
-
-            document.getElementById('application-form').addEventListener('submit', function (event) {
-                event.preventDefault();
-            
-                var submitButton = document.getElementById('submit-button');
-                submitButton.textContent = '🔄제출중..';
-                submitButton.disabled = true;
-                submitButton.classList.add('loading');
-            
-                var formData = {
-                    id: document.getElementById('id').value,
-                    name: document.getElementById('name').value,
-                    tel: document.getElementById('tel').value,
-                    email: document.getElementById('email').value,
-                    message: document.getElementById('message').value,
-                    signature: signaturePad.toDataURL('image/png') // 서명 데이터 추가
-                };            
-                alert('🤷‍♂️제출중입니다. 잠시만 기다려주세요');
-                    fetch('https://script.google.com/macros/s/AKfycbzFcpzoe8sHd0BTjDN2p4eYMtLS8kH3hrI4IlnQ1NEzLCUxRRNiEOASFp0mjvhDGe6u/exec', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        mode: 'no-cors', // 테스트용 설정
-                        body: JSON.stringify({
-                            id: document.getElementById('id').value,
-                            name: document.getElementById('name').value,
-                            tel: document.getElementById('tel').value,
-                            email: document.getElementById('email').value,
-                            message: document.getElementById('message').value,
-                            signature: signaturePad.toDataURL('image/png') // 서명 데이터 추가
-                        })
-                    })
-                    .then(response => response.text())
-                    .then(data => {
-                        alert('🚀 정상 제출되었습니다.');
-                        setTimeout(function () {
-                            document.getElementById('application-form').reset();
-                            signaturePad.clear(); // 서명 패드도 초기화
-                            document.getElementById('response').textContent = ''; // 응답 메시지 초기화
-                        }, 3000); // 3000ms = 3초
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        document.getElementById('response').textContent = '⚠서버저장시 오류 발생';
-                    })
-                    .finally(() => {
-                        submitButton.textContent = '제출하기';
-                        submitButton.disabled = false;
-                        submitButton.classList.remove('loading');
+                document
+                    .getElementById('clear-signature')
+                    .addEventListener('click', function () {
+                        signaturePad.clear();
                     });
-            }); 
-        });          
-    </script>
-</body>
+
+                document
+                    .getElementById('application-form')
+                    .addEventListener('submit', function (event) {
+                        event.preventDefault();
+
+                        var id = document
+                            .getElementById('id')
+                            .value;
+                        var name = document
+                            .getElementById('name')
+                            .value;
+                        var tel = document
+                            .getElementById('tel')
+                            .value;
+                        var email = document
+                            .getElementById('email')
+                            .value;
+
+                        var confirmation = confirm(
+                            `🤷🏽‍♀️입력하신  내용을 확인해 주세요:\n\n ID: ${id}\n이름: ${name}\n전화번호: ${tel}\n이메일: ${email}\n\n이대로 제출하시겠습니까?\n`
+                        );
+
+                        if (confirmation) {
+                            var submitButton = document.getElementById('submit-button');
+                            submitButton.textContent = '🔄제출중..';
+                            submitButton.disabled = true;
+                            submitButton
+                                .classList
+                                .add('loading');
+
+                            var formData = {
+                                id: id,
+                                name: name,
+                                tel: tel,
+                                email: email,
+                                signature: signaturePad.toDataURL('image/png') // 서명 데이터 추가
+                            };
+                            alert('🤷‍♂️제출중입니다. 잠시만 기다려주세요');
+                            fetch(
+                                'https://script.google.com/macros/s/AKfycbzFcpzoe8sHd0BTjDN2p4eYMtLS8kH3hrI4Iln' +
+                                        'Q1NEzLCUxRRNiEOASFp0mjvhDGe6u/exec',
+                                {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    mode: 'no-cors', // 테스트용 설정 =>CORS미적용으로 서버 통신
+                                    body: JSON.stringify(formData)
+                                }
+                            )
+                                .then(response => response.text())
+                                .then(data => {
+                                    alert('🚀 정상 제출되었습니다.');
+                                    setTimeout(function () {
+                                        document
+                                            .getElementById('application-form')
+                                            .reset();
+                                        signaturePad.clear(); // 서명 패드도 초기화
+                                        document
+                                            .getElementById('response')
+                                            .textContent = ''; // 응답 메시지 초기화
+                                    }, 3000); // 3000ms = 3초
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    document
+                                        .getElementById('response')
+                                        .textContent = '⚠서버저장시 오류 발생';
+                                })
+                                . finally(() => {
+                                    submitButton.textContent = '제출하기';
+                                    submitButton.disabled = false;
+                                    submitButton
+                                        .classList
+                                        .remove('loading');
+                                });
+                        } else {
+                            alert('제출이 취소되었습니다.');
+                        }
+                    });
+            });
+        </script>
+    </body>
 </html>
